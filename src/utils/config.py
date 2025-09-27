@@ -14,6 +14,9 @@ load_dotenv()
 class Config:
     """
     Classe de configuração centralizada do projeto
+    
+    Desenvolvido por: Danielly Xavier
+    Email: danielly.xavier@outlook.com
     """
     
     # Configurações de Logging

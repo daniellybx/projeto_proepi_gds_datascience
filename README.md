@@ -166,7 +166,7 @@ O estudo é uma análise retrospectiva e observacional. O pipeline de processame
 
 ## 7. Contribuição
 
-Este é um projeto da ProEpi - Guardiões da Saúde. Para contribuir:
+Este é um projeto de Danielly Xavier para a ProEpi - Guardiões da Saúde. Para contribuir:
 
 1. Faça um fork do projeto
 2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
@@ -186,8 +186,9 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ## 9. Contato
 
+- **Danielly Xavier**
+- Email: danielly.xavier@outlook.com
 - **ProEpi - Guardiões da Saúde**
-- Email: contato@proepi.org.br
 - Website: https://proepi.org.br
 
 ## 10. Agradecimentos

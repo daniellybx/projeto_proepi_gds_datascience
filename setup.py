@@ -9,8 +9,8 @@ with open("requirements.txt", "r", encoding="utf-8") as fh:
 setup(
     name="proepi-gds-datascience",
     version="0.1.0",
-    author="ProEpi - Guardiões da Saúde",
-    author_email="contato@proepi.org.br",
+    author="Danielly Xavier",
+    author_email="danielly.xavier@outlook.com",
     description="Análises de Ciência de Dados para detecção de anomalias e surtos de doenças",
     long_description=long_description,
     long_description_content_type="text/markdown",
