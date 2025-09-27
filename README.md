@@ -260,5 +260,3 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 - Colaboradores e revisores do projeto
 
 ---
-
-**Nota**: Este é um projeto de pesquisa científica. Os resultados serão utilizados para publicação em revista científica e não para desenvolvimento de features do aplicativo.
