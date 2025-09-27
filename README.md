@@ -1,198 +1,264 @@
-# Projeto Guardiões da Saúde - ProEpi [Ciência de Dados]
+# Análise de Dados para Detecção de Anomalias em Vigilância Participativa
+## Projeto Guardiões da Saúde - ProEpi
 
-Repositório do projeto de Ciência de Dados para detecção de anomalias e potenciais surtos de doenças, utilizando dados do aplicativo Guardiões da Saúde (GoH) na comunidade da Universidade de Brasília (UnB).
+**Análise Científica para Artigo de Pesquisa**
 
-## 1. Sobre o Projeto
+---
 
-A vigilância em saúde tradicional é, em grande parte, reativa. Este projeto visa construir um pipeline de dados para a detecção precoce de surtos, aplicando técnicas de Machine Learning sobre dados de vigilância participativa. O sistema irá analisar sintomas autorrelatados pela comunidade acadêmica da UnB para identificar padrões e anomalias que fujam da normalidade sazonal, servindo como um sistema de alerta para a saúde pública.
+## 📋 Resumo do Projeto
 
-O objetivo final é desenvolver um modelo piloto capaz de revelar a "morbidade invisível" — casos que não são capturados por canais formais de notificação — e permitir intervenções mais ágeis.
+Este repositório contém a análise de dados completa para o artigo científico "Detecção de Anomalias em Vigilância Participativa: Uma Análise de Dados do Aplicativo Guardiões da Saúde na Universidade de Brasília". O projeto visa desenvolver e validar métodos de detecção precoce de surtos de doenças utilizando dados de vigilância participativa.
 
-**Fonte de Dados:**
-* **Aplicação:** Guardiões da Saúde (GoH)
-* **População:** Comunidade da Universidade de Brasília (UnB)
-* **Período:** 2022 a 2024
-* **Volume:** ~1.1 milhão de relatos
+### 🎯 Objetivos da Pesquisa
 
-## 2. Estrutura do Projeto
+1. **Análise Exploratória**: Caracterizar o perfil dos usuários e distribuição temporal/espacial dos sintomas
+2. **Clusterização**: Identificar síndromes potenciais através de agrupamento de sintomas similares
+3. **Modelagem Temporal**: Desenvolver modelos preditivos para incidência esperada de síndromes
+4. **Detecção de Anomalias**: Implementar sistema de alerta para desvios significativos da normalidade
+
+### 📊 Fonte de Dados
+
+- **Aplicação**: Guardiões da Saúde (GoH) - ProEpi
+- **População**: Comunidade da Universidade de Brasília (UnB)
+- **Período**: 2022-2024
+- **Volume**: ~1.1 milhão de relatos de sintomas
+- **Tipo**: Dados de vigilância participativa (autorrelato)
+
+---
+
+## 🗂️ Estrutura do Projeto
 
 ```
 projeto_proepi_gds_datascience/
 ├── data/                           # Dados do projeto
-│   ├── raw/                       # Dados brutos (CSV, Excel, etc.)
+│   ├── raw/                       # Dados brutos (CSV, Excel)
+│   │   ├── gds-unb-ano-2024-extractionAt-20250903.csv
+│   │   └── dicionario-dados-fonte-dados.xlsx
 │   ├── processed/                 # Dados processados e limpos
 │   └── external/                  # Dados externos de referência
-├── notebooks/                     # Jupyter Notebooks organizados por fase
-│   ├── 01_eda/                   # Análise Exploratória de Dados
-│   ├── 02_clustering/            # Clusterização e definição de síndromes
-│   ├── 03_time_series/           # Modelagem de séries temporais
-│   └── 04_anomaly_detection/     # Detecção de anomalias
+├── analysis/                      # Scripts de análise por fase
+│   ├── eda/                      # Análise Exploratória de Dados
+│   ├── clustering/               # Clusterização e definição de síndromes
+│   ├── time_series/              # Modelagem de séries temporais
+│   └── anomaly_detection/        # Detecção de anomalias
+├── notebooks/                     # Jupyter Notebooks de análise
+│   ├── 01_exploratory_data_analysis.ipynb  # Análise Exploratória de Dados
+│   ├── 02_clustering_syndromes.ipynb  # Clusterização para Síndromes
+│   ├── 03_time_series_analysis.ipynb  # Análise de Séries Temporais
+│   ├── tabelas/                  # Tabelas de resultados
+│   └── graficos/                 # Gráficos e visualizações
+├── models/                        # Modelos treinados e scripts
+│   ├── trained/                  # Modelos salvos (.pkl, .joblib)
+│   │   ├── clustering_models/
+│   │   ├── time_series_models/
+│   │   └── anomaly_detection_models/
+│   └── scripts/                  # Scripts para treinar e executar modelos
+│       ├── train_clustering.py
+│       ├── train_time_series.py
+│       └── detect_anomalies.py
 ├── src/                          # Código fonte Python
-│   ├── data/                     # Módulos de processamento de dados
-│   │   ├── data_loader.py        # Carregamento de dados
-│   │   ├── data_preprocessor.py  # Pré-processamento e limpeza
-│   │   └── feature_engineering.py # Engenharia de features
-│   ├── models/                   # Modelos de Machine Learning
-│   │   ├── clustering.py         # Modelos de clusterização
-│   │   ├── time_series.py        # Modelos de séries temporais
-│   │   └── anomaly_detection.py  # Detecção de anomalias
-│   ├── visualization/            # Módulos de visualização
-│   │   ├── plots.py              # Funções de plotagem
-│   │   └── dashboards.py         # Dashboards interativos
+│   ├── data/                     # Processamento de dados
+│   ├── models/                   # Implementação de modelos
 │   └── utils/                    # Utilitários gerais
-│       ├── config.py             # Configurações do projeto
-│       ├── logging_config.py     # Configuração de logs
-│       └── helpers.py            # Funções auxiliares
 ├── tests/                        # Testes automatizados
-│   ├── unit/                     # Testes unitários
-│   └── integration/              # Testes de integração
-├── docs/                         # Documentação do projeto
-├── reports/                      # Relatórios e resultados
 ├── requirements.txt              # Dependências Python
 ├── setup.py                      # Configuração do pacote
-├── .gitignore                    # Arquivos ignorados pelo Git
 └── README.md                     # Este arquivo
 ```
 
-## 3. Stack Tecnológico
+---
 
-Este projeto será desenvolvido utilizando o seguinte stack:
+## 🔬 Metodologia Científica
 
-* **Linguagem de Programação:** `Python 3.8+`
-* **Ambiente de Desenvolvimento (IDE):** `Cursor`
-* **Principais Bibliotecas:**
-    * `Pandas`: Para manipulação e análise de dados.
-    * `Scikit-learn`: Para pré-processamento e modelagem.
-    * `Kmodes`: Para a implementação do algoritmo K-Prototype.
-    * `Statsmodels`: Para análise estatística e modelos SARIMA.
-    * `XGBoost`: Para modelagem de séries temporais com Gradient Boosting.
-    * `TensorFlow / Keras`: Para a implementação de modelos LSTM.
-    * `Prophet`: Para modelagem de séries temporais da Meta.
-    * `Matplotlib` / `Seaborn`: Para visualização de dados.
+### Fase 1: Análise Exploratória de Dados (EDA)
+- **Objetivo**: Compreender características dos dados e qualidade
+- **Processos**:
+  - Limpeza e tratamento de valores ausentes
+  - Análise descritiva de variáveis
+  - Análise temporal e espacial
+  - Identificação de padrões e outliers
 
-## 4. Instalação e Configuração
+### Fase 2: Clusterização para Definição de Síndromes
+- **Objetivo**: Agrupar sintomas similares em síndromes
+- **Algoritmo**: K-Prototype (dados mistos numéricos/categóricos)
+- **Validação**: Silhouette Score e análise de estabilidade
+- **Output**: Definição de síndromes para análise temporal
+
+### Fase 3: Modelagem de Séries Temporais
+- **Objetivo**: Prever incidência esperada de cada síndrome
+- **Modelos**: SARIMA, XGBoost, LSTM, Prophet
+- **Métricas**: RMSE, R², Ljung-Box test
+- **Validação**: Time series cross-validation
+
+### Fase 4: Detecção de Anomalias
+- **Objetivo**: Identificar desvios significativos da normalidade
+- **Critério**: Casos observados > limite superior do IC 95%
+- **Output**: Sistema de alerta para surtos potenciais
+
+---
+
+## 🛠️ Stack Tecnológico
+
+### Linguagens e Ambientes
+- **Python 3.8+**: Linguagem principal
+- **Jupyter Notebooks**: Análise interativa
+- **Git**: Controle de versão
+
+### Bibliotecas Principais
+- **Análise de Dados**: `pandas`, `numpy`, `scipy`
+- **Machine Learning**: `scikit-learn`, `kmodes`, `xgboost`
+- **Séries Temporais**: `statsmodels`, `prophet`, `tensorflow`
+- **Visualização**: `matplotlib`, `seaborn`, `plotly`
+- **Processamento**: `openpyxl`, `joblib`
+
+---
+
+## 🚀 Instalação e Configuração
 
 ### Pré-requisitos
 - Python 3.8 ou superior
 - Git
+- 8GB+ RAM recomendado
 
 ### Instalação
-1. Clone o repositório:
 ```bash
-git clone https://github.com/proepi/projeto_proepi_gds_datascience.git
+# 1. Clone o repositório
+git clone https://github.com/daniellybx/projeto_proepi_gds_datascience.git
 cd projeto_proepi_gds_datascience
-```
 
-2. Crie um ambiente virtual:
-```bash
+# 2. Crie ambiente virtual
 python -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
-```
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-3. Instale as dependências:
-```bash
+# 3. Instale dependências
 pip install -r requirements.txt
-```
 
-4. Instale o pacote em modo de desenvolvimento:
-```bash
+# 4. Instale em modo desenvolvimento
 pip install -e .
 ```
 
 ### Configuração
-1. Configure as variáveis de ambiente (opcional):
 ```bash
-cp .env.example .env
-# Edite o arquivo .env com suas configurações
+# Configure variáveis de ambiente (opcional)
+cp env.example .env
+# Edite .env com suas configurações
 ```
 
-2. Configure o logging:
-```python
-from src.utils.logging_config import setup_logging
-setup_logging()
+---
+
+## 📊 Execução da Análise
+
+### 1. Análise Exploratória
+```bash
+# Execute o notebook de EDA
+jupyter notebook notebooks/01_exploratory_data_analysis.ipynb
 ```
 
-## 5. Uso do Projeto
+### 2. Treinamento de Modelos
+```bash
+# Clusterização
+python models/scripts/train_clustering.py
 
-### Carregamento de Dados
-```python
-from src.data import DataLoader
+# Séries Temporais
+python models/scripts/train_time_series.py
 
-# Carregar dados de sintomas
-loader = DataLoader("data/raw")
-symptoms_df = loader.load_symptoms_data("sintomas_goh.csv")
+# Detecção de Anomalias
+python models/scripts/detect_anomalies.py
 ```
 
-### Execução dos Notebooks
-Os notebooks estão organizados por fase do projeto:
-1. `notebooks/01_eda/` - Análise Exploratória de Dados
-2. `notebooks/02_clustering/` - Clusterização e definição de síndromes
-3. `notebooks/03_time_series/` - Modelagem de séries temporais
-4. `notebooks/04_anomaly_detection/` - Detecção de anomalias
+### 3. Geração de Resultados
+```bash
+# Execute notebooks de resultados
+jupyter notebook notebooks/05_results/
+```
 
-### Execução de Testes
+---
+
+## 📈 Resultados Esperados
+
+### Produtos da Análise
+1. **Modelos Treinados**: Arquivos `.pkl` salvos em `models/trained/`
+2. **Gráficos**: Visualizações salvas em `notebooks/graficos/`
+3. **Tabelas**: Resultados numéricos em `notebooks/tabelas/`
+4. **Notebooks**: Análises completas em `notebooks/`
+
+### Métricas de Avaliação
+- **Clusterização**: Silhouette Score, Davies-Bouldin Index
+- **Séries Temporais**: RMSE, MAE, R², Ljung-Box p-value
+- **Detecção**: Precision, Recall, F1-Score para anomalias
+
+---
+
+## 🧪 Testes
+
 ```bash
 # Executar todos os testes
 pytest
 
-# Executar testes específicos
+# Testes específicos
 pytest tests/unit/
 pytest tests/integration/
 ```
 
-## 6. Metodologia e Pipeline de Análise
+---
 
-O estudo é uma análise retrospectiva e observacional. O pipeline de processamento e análise dos dados foi estruturado nas seguintes etapas:
+## 📝 Contribuição para Pesquisa
 
-### Fase 1: Análise Descritiva e Pré-processamento (EDA)
-* **Objetivo:** Compreender e preparar os dados.
-* **Processos:**
-    * Limpeza de dados: tratamento de valores ausentes e inconsistentes.
-    * Análise Exploratória de Dados (EDA) para caracterizar o perfil dos usuários e a distribuição dos sintomas.
-    * Engenharia de features e codificação de variáveis categóricas.
-
-### Fase 2: Clusterização para Definição de Síndromes
-* **Objetivo:** Agrupar relatos com sintomas similares para identificar síndromes potenciais (ex: síndrome gripal, gastrointestinal).
-* **Algoritmo:** `K-Prototype`, ideal para lidar com datasets que contêm variáveis numéricas e categóricas.
-* **Avaliação:** A qualidade e o número ideal de clusters serão validados com o `Silhouette Score`.
-
-### Fase 3: Modelagem de Séries Temporais e Detecção de Anomalias
-* **Objetivo:** Prever a incidência esperada de cada síndrome e identificar desvios significativos.
-* **Processo:**
-    1.  Cálculo das taxas de incidência semanais para cada síndrome, padronizadas por 100.000 habitantes.
-    2.  Treinamento e avaliação de múltiplos modelos de séries temporais: `SARIMA`, `XGBoost`, `LSTM` e `Prophet`.
-    3.  As métricas de avaliação incluem RMSE, R² e análise de resíduos (Ljung-Box).
-    4.  Uma **anomalia** será sinalizada quando o número de casos observados em uma semana ultrapassar o limite superior do intervalo de confiança (95%) das previsões do modelo.
-
-## 7. Contribuição
-
-Este é um projeto de Danielly Xavier para a ProEpi - Guardiões da Saúde. Para contribuir:
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+### Para Colaboradores
+1. Crie branch seguindo padrão: `local-{máquina}-{nome}`
+   - Exemplos: `local-macbook-danielly`, `local-pc-danielly`
+2. Faça suas modificações
+3. Commit com mensagem descritiva
+4. Abra Pull Request
 
 ### Padrões de Código
-- Siga o PEP 8 para estilo de código Python
-- Use type hints quando possível
+- Siga PEP 8 para Python
+- Use type hints
+- Documente funções com docstrings
 - Escreva testes para novas funcionalidades
-- Documente funções e classes com docstrings
 
-## 8. Licença
+---
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+## 📚 Referências e Citações
 
-## 9. Contato
+### Dados
+- **Fonte**: Aplicativo Guardiões da Saúde (ProEpi)
+- **Período**: 2022-2024
+- **População**: Comunidade UnB
 
+### Metodologia
+- K-Prototype clustering para dados mistos
+- Múltiplos modelos de séries temporais
+- Detecção de anomalias baseada em intervalos de confiança
+
+---
+
+## 👥 Autores e Contato
+
+**Pesquisadora Principal:**
 - **Danielly Xavier**
 - Email: danielly.xavier@outlook.com
+- Afiliação: ProEpi - Guardiões da Saúde
+
+**Instituição:**
 - **ProEpi - Guardiões da Saúde**
 - Website: https://proepi.org.br
 
-## 10. Agradecimentos
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+---
+
+## 🙏 Agradecimentos
 
 - Comunidade da Universidade de Brasília (UnB)
 - Equipe do aplicativo Guardiões da Saúde
-- Todos os voluntários e colaboradores do projeto
+- Todos os voluntários que contribuíram com dados
+- Colaboradores e revisores do projeto
+
+---
+
+**Nota**: Este é um projeto de pesquisa científica. Os resultados serão utilizados para publicação em revista científica e não para desenvolvimento de features do aplicativo.
