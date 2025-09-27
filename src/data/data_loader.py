@@ -26,7 +26,7 @@ class DataLoader:
         self.data_path = Path(data_path)
         self.data_path.mkdir(parents=True, exist_ok=True)
         
-    def load_symptoms_data(self, filename: str = "sintomas_goh.csv") -> pd.DataFrame:
+    def load_symptoms_data(self, filename: str = "gds-unb-ano-2024-extractionAt-20250903.csv") -> pd.DataFrame:
         """
         Carrega dados de sintomas do GoH
         
@@ -43,19 +43,27 @@ class DataLoader:
             return pd.DataFrame()
             
         try:
-            # Tenta diferentes separadores e encodings
-            for sep in [',', ';', '\t']:
-                for encoding in ['utf-8', 'latin-1', 'cp1252']:
-                    try:
-                        df = pd.read_csv(file_path, sep=sep, encoding=encoding)
-                        if len(df.columns) > 1:  # Verifica se o separador está correto
-                            logger.info(f"Dados carregados com sucesso: {len(df)} registros, {len(df.columns)} colunas")
-                            return df
-                    except Exception as e:
-                        continue
-                        
-            # Se nenhum separador/encoding funcionou
-            raise ValueError("Não foi possível carregar o arquivo com os separadores/encodings testados")
+            # Carrega dados sem cabeçalho
+            df = pd.read_csv(file_path, header=None)
+            
+            # Define nomes das colunas baseado no dicionário de dados
+            column_names = [
+                'report_id', 'user_id', 'report_bad_since', 'report_contact_with_symptom',
+                'report_created_at', 'report_latitude', 'report_longitude', 'report_symptoms',
+                'symptom_1', 'symptom_2', 'symptom_3', 'symptom_4', 'symptom_5', 'symptom_6',
+                'symptom_7', 'syndrome_id', 'data_extracted_at'
+            ]
+            
+            # Ajusta o número de colunas se necessário
+            if len(df.columns) != len(column_names):
+                logger.warning(f"Número de colunas ({len(df.columns)}) diferente do esperado ({len(column_names)})")
+                # Usa nomes genéricos se não bater
+                df.columns = [f'col_{i}' for i in range(len(df.columns))]
+            else:
+                df.columns = column_names
+            
+            logger.info(f"Dados carregados com sucesso: {len(df)} registros, {len(df.columns)} colunas")
+            return df
             
         except Exception as e:
             logger.error(f"Erro ao carregar dados: {e}")
