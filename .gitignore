@@ -139,6 +139,10 @@ dmypy.json
 *.pkl
 *.pickle
 
+# Projeto específico - NUNCA commitar dados
+data/
+!data/.gitkeep
+
 # Model files
 *.joblib
 *.model
