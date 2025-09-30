@@ -134,10 +134,6 @@ dmypy.json
 *.xls
 *.parquet
 *.feather
-*.h5
-*.hdf5
-*.pkl
-*.pickle
 
 # Projeto específico - NUNCA commitar dados
 data/
@@ -146,7 +142,6 @@ data/
 # Model files
 *.joblib
 *.model
-*.h5
 *.pb
 
 # Jupyter Notebook checkpoints
