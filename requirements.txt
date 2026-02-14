@@ -89,6 +89,7 @@ nbformat==5.10.4
 nest-asyncio==1.6.0
 notebook==7.4.7
 notebook_shim==0.2.4
+networkx>=3.0
 numpy==2.3.3
 openpyxl==3.1.5
 opt_einsum==3.4.0
@@ -168,3 +169,4 @@ widgetsnbextension==4.0.14
 wrapt==1.17.3
 xgboost==3.0.5
 xlrd==2.0.2
+python-pptx>=0.6.21
