@@ -1,4 +1,3 @@
-
 langchain
 langchain-community
 langchain-huggingface
@@ -9,3 +8,10 @@ sentence-transformers
 chromadb
 ollama
 pandas
+openpyxl
+numpy
+statsmodels
+xgboost
+scikit-learn
+flaml[automl,ts_forecast]
+matplotlib
