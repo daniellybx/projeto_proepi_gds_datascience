@@ -13,8 +13,9 @@ Este repositório contém a análise de dados completa para o artigo científico
 
 1. **Análise Exploratória**: Caracterizar o perfil dos usuários e distribuição temporal/espacial dos sintomas
 2. **Clusterização**: Identificar síndromes potenciais através de agrupamento de sintomas similares
-3. **Modelagem Temporal**: Desenvolver modelos preditivos para incidência esperada de síndromes
-4. **Detecção de Anomalias**: Implementar sistema de alerta para desvios significativos da normalidade
+3. **Diagnóstico por Agente**: Classificar combinações únicas de sintomas (ProEpi/Guardiões da Saúde) em relação ao dataset Medley Disease and symptoms 2023 usando similaridade de Jaccard
+4. **Modelagem Temporal**: Desenvolver modelos preditivos para incidência esperada de síndromes
+5. **Detecção de Anomalias**: Implementar sistema de alerta para desvios significativos da normalidade
 
 ### 📊 Fonte de Dados
 
@@ -31,39 +32,38 @@ Este repositório contém a análise de dados completa para o artigo científico
 ```
 projeto_proepi_gds_datascience/
 ├── data/                           # Dados do projeto
-│   ├── raw/                       # Dados brutos (CSV, Excel)
-│   │   ├── gds-unb-ano-2024-extractionAt-20250903.csv
-│   │   └── dicionario-dados-fonte-dados.xlsx
-│   ├── processed/                 # Dados processados e limpos
-│   └── external/                  # Dados externos de referência
-├── analysis/                      # Scripts de análise por fase
-│   ├── eda/                      # Análise Exploratória de Dados
-│   ├── clustering/               # Clusterização e definição de síndromes
-│   ├── time_series/              # Modelagem de séries temporais
-│   └── anomaly_detection/        # Detecção de anomalias
-├── notebooks/                     # Jupyter Notebooks de análise
-│   ├── 01_exploratory_data_analysis.ipynb  # Análise Exploratória de Dados
-│   ├── 02_clustering_syndromes.ipynb  # Clusterização para Síndromes
-│   ├── 03_time_series_analysis.ipynb  # Análise de Séries Temporais
-│   ├── tabelas/                  # Tabelas de resultados
-│   └── graficos/                 # Gráficos e visualizações
-├── models/                        # Modelos treinados e scripts
-│   ├── trained/                  # Modelos salvos (.pkl, .joblib)
+│   ├── raw/                        # Dados brutos (CSV, Excel)
+│   ├── inputs/                     # Dados de entrada (ex.: Disease and symptoms dataset)
+│   ├── processed/                  # Dados processados e limpos
+│   ├── results/                    # Resultados das análises
+│   │   ├── clusters_outputs/       # Saídas da clusterização (notebook 02)
+│   │   └── agent_outputs/          # Saídas do agente de diagnóstico (notebook 03)
+│   └── external/                   # Dados externos de referência
+├── notebooks/                      # Jupyter Notebooks de análise
+│   ├── 01_exploratory_data_analysis.ipynb   # Análise Exploratória de Dados
+│   ├── 02_clustering_syndromes.ipynb       # Clusterização para Síndromes
+│   ├── 03_agent_diagnosis_surveillance.ipynb  # Diagnóstico por Agente (Jaccard + Medley)
+│   ├── 04_time_series_analysis.ipynb       # Análise de Séries Temporais
+│   ├── tabelas/                    # Tabelas de resultados
+│   └── graficos/                   # Gráficos e visualizações
+├── models/                         # Modelos treinados e scripts
+│   ├── trained/                    # Modelos salvos (.pkl, .joblib)
 │   │   ├── clustering_models/
 │   │   ├── time_series_models/
 │   │   └── anomaly_detection_models/
-│   └── scripts/                  # Scripts para treinar e executar modelos
+│   └── scripts/                    # Scripts para treinar modelos
 │       ├── train_clustering.py
-│       ├── train_time_series.py
-│       └── detect_anomalies.py
-├── src/                          # Código fonte Python
-│   ├── data/                     # Processamento de dados
-│   ├── models/                   # Implementação de modelos
-│   └── utils/                    # Utilitários gerais
-├── tests/                        # Testes automatizados
-├── requirements.txt              # Dependências Python
-├── setup.py                      # Configuração do pacote
-└── README.md                     # Este arquivo
+│       └── train_time_series.py
+├── scripts/                        # Scripts auxiliares do projeto
+│   ├── setup_environment.py       # Configuração do ambiente (GPU, logging, paths)
+│   └── create_presentation.py     # Geração de apresentação a partir dos notebooks
+├── src/                            # Código fonte Python
+│   ├── data/                       # Carregamento e processamento de dados (DataLoader)
+│   └── utils/                      # Utilitários (config, environment, logging, helpers)
+├── requirements.txt                # Dependências Python
+├── setup.py                        # Configuração do pacote
+├── env.example                     # Exemplo de variáveis de ambiente
+└── README.md                       # Este arquivo
 ```
 
 ---
@@ -82,15 +82,22 @@ projeto_proepi_gds_datascience/
 - **Objetivo**: Agrupar sintomas similares em síndromes
 - **Algoritmo**: K-Prototype (dados mistos numéricos/categóricos)
 - **Validação**: Silhouette Score e análise de estabilidade
-- **Output**: Definição de síndromes para análise temporal
+- **Output**: Definição de síndromes para análise temporal (ex.: `clusters_outputs_dataset_sintomas_grupos.xlsx`)
 
-### Fase 3: Modelagem de Séries Temporais
+### Fase 3: Diagnóstico por Agente (Agent Diagnosis)
+- **Objetivo**: Classificar combinações únicas de sintomas em relação a um dataset de referência de doenças
+- **Referência**: Medley Disease and symptoms dataset 2023 (773 doenças, 377 sintomas)
+- **Método**: Similaridade de Jaccard entre sintomas (PT-BR) e dataset em inglês; mapeamento de nomes de sintomas
+- **Ferramentas**: Diagnóstico primário (melhor match; se ≥60%); diagnósticos secundários (matches 50–59% quando primário ≥60%)
+- **Output**: Planilhas classificadas em `data/results/agent_outputs/`
+
+### Fase 4: Modelagem de Séries Temporais
 - **Objetivo**: Prever incidência esperada de cada síndrome
 - **Modelos**: SARIMA, XGBoost, LSTM, Prophet
 - **Métricas**: RMSE, R², Ljung-Box test
 - **Validação**: Time series cross-validation
 
-### Fase 4: Detecção de Anomalias
+### Fase 5: Detecção de Anomalias
 - **Objetivo**: Identificar desvios significativos da normalidade
 - **Critério**: Casos observados > limite superior do IC 95%
 - **Output**: Sistema de alerta para surtos potenciais
@@ -105,11 +112,10 @@ projeto_proepi_gds_datascience/
 - **Git**: Controle de versão
 
 ### Bibliotecas Principais
-- **Análise de Dados**: `pandas`, `numpy`, `scipy`
-- **Machine Learning**: `scikit-learn`, `kmodes`, `xgboost`
-- **Séries Temporais**: `statsmodels`, `prophet`, `tensorflow`
-- **Visualização**: `matplotlib`, `seaborn`, `plotly`
-- **Processamento**: `openpyxl`, `joblib`
+- **Análise de Dados**: `pandas`, `numpy`, `openpyxl`
+- **Machine Learning e Séries Temporais**: `scikit-learn`, `xgboost`, `statsmodels`, `flaml` (AutoML e previsão temporal)
+- **Visualização**: `matplotlib`
+- **Agentes e embeddings** (opcional): `langchain`, `langchain-community`, `langchain-huggingface`, `langchain-chroma`, `chromadb`, `sentence-transformers`, `ollama`, `pypdf`
 
 ---
 
@@ -148,28 +154,39 @@ cp env.example .env
 
 ## 📊 Execução da Análise
 
-### 1. Análise Exploratória
+### 1. Configuração do ambiente (opcional)
 ```bash
-# Execute o notebook de EDA
-jupyter notebook notebooks/01_exploratory_data_analysis.ipynb
+python scripts/setup_environment.py
 ```
 
-### 2. Treinamento de Modelos
+### 2. Notebooks (ordem recomendada)
+```bash
+# 1. Análise Exploratória de Dados
+jupyter notebook notebooks/01_exploratory_data_analysis.ipynb
+
+# 2. Clusterização para Síndromes
+jupyter notebook notebooks/02_clustering_syndromes.ipynb
+
+# 3. Diagnóstico por Agente (Jaccard + Medley)
+jupyter notebook notebooks/03_agent_diagnosis_surveillance.ipynb
+
+# 4. Análise de Séries Temporais
+jupyter notebook notebooks/04_time_series_analysis.ipynb
+```
+
+### 3. Treinamento de modelos (scripts)
 ```bash
 # Clusterização
 python models/scripts/train_clustering.py
 
 # Séries Temporais
 python models/scripts/train_time_series.py
-
-# Detecção de Anomalias
-python models/scripts/detect_anomalies.py
 ```
 
-### 3. Geração de Resultados
+### 4. Geração de apresentação (opcional)
 ```bash
-# Execute notebooks de resultados
-jupyter notebook notebooks/05_results/
+# Gera PowerPoint a partir dos notebooks de clustering e séries temporais
+python scripts/create_presentation.py
 ```
 
 ---
@@ -192,12 +209,8 @@ jupyter notebook notebooks/05_results/
 ## 🧪 Testes
 
 ```bash
-# Executar todos os testes
+# Executar testes (quando disponíveis)
 pytest
-
-# Testes específicos
-pytest tests/unit/
-pytest tests/integration/
 ```
 
 ---
@@ -228,6 +241,7 @@ pytest tests/integration/
 
 ### Metodologia
 - K-Prototype clustering para dados mistos
+- Diagnóstico por agente: similaridade de Jaccard com Medley Disease and symptoms dataset 2023
 - Múltiplos modelos de séries temporais
 - Detecção de anomalias baseada em intervalos de confiança
 
