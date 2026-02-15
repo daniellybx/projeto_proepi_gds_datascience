@@ -265,12 +265,3 @@ pytest
 Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
 ---
-
-## 🙏 Agradecimentos
-
-- Comunidade da Universidade de Brasília (UnB)
-- Equipe do aplicativo Guardiões da Saúde
-- Todos os voluntários que contribuíram com dados
-- Colaboradores e revisores do projeto
-
----
