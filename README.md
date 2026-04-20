@@ -1,267 +1,369 @@
-# Análise de Dados para Detecção de Anomalias em Vigilância Participativa
-## Projeto Guardiões da Saúde - ProEpi
+# Guardians of Health (ProEpi) - Data Science
 
-**Análise Científica para Artigo de Pesquisa**
+End-to-end data science workflows for participatory epidemiological surveillance, including:
 
----
+- Exploratory analysis of self-reported symptoms
+- Syndrome clustering experiments
+- AI-assisted diagnosis ranking
+- Time series monitoring and outbreak spike detection
 
-## 📋 Resumo do Projeto
-
-Este repositório contém a análise de dados completa para o artigo científico "Detecção de Anomalias em Vigilância Participativa: Uma Análise de Dados do Aplicativo Guardiões da Saúde na Universidade de Brasília". O projeto visa desenvolver e validar métodos de detecção precoce de surtos de doenças utilizando dados de vigilância participativa.
-
-### 🎯 Objetivos da Pesquisa
-
-1. **Análise Exploratória**: Caracterizar o perfil dos usuários e distribuição temporal/espacial dos sintomas
-2. **Clusterização**: Identificar síndromes potenciais através de agrupamento de sintomas similares
-3. **Diagnóstico por Agente**: Classificar combinações únicas de sintomas (ProEpi/Guardiões da Saúde) em relação ao dataset Medley Disease and symptoms 2023 usando similaridade de Jaccard
-4. **Modelagem Temporal**: Desenvolver modelos preditivos para incidência esperada de síndromes
-5. **Detecção de Anomalias**: Implementar sistema de alerta para desvios significativos da normalidade
-
-### 📊 Fonte de Dados
-
-- **Aplicação**: Guardiões da Saúde (GoH) - ProEpi
-- **População**: Comunidade da Universidade de Brasília (UnB)
-- **Período**: 2022-2024
-- **Volume**: ~1.1 milhão de relatos de sintomas
-- **Tipo**: Dados de vigilância participativa (autorrelato)
+This repository combines exploratory notebooks and production-style Python modules to support both research iteration and repeatable execution.
 
 ---
 
-## 🗂️ Estrutura do Projeto
+## Table of Contents
 
-```
+- [1) Project Scope](#1-project-scope)
+- [2) Technical Highlights](#2-technical-highlights)
+- [3) Repository Structure](#3-repository-structure)
+- [4) Data Inputs and Outputs](#4-data-inputs-and-outputs)
+- [5) Environment Setup](#5-environment-setup)
+- [6) Jupyter Kernel Setup (Single Kernel)](#6-jupyter-kernel-setup-single-kernel)
+- [7) Running Notebooks](#7-running-notebooks)
+- [8) Running Production Pipelines (`src/`)](#8-running-production-pipelines-src)
+- [9) Reproducibility and Validation](#9-reproducibility-and-validation)
+- [10) Troubleshooting](#10-troubleshooting)
+- [11) Technical Report (Method + Results)](#11-technical-report-method--results)
+- [12) Contributing](#12-contributing)
+- [13) License and Contact](#13-license-and-contact)
+
+---
+
+## 1) Project Scope
+
+The project processes large-scale symptom reports from the Guardioes da Saude platform and transforms them into structured epidemiological signals.
+
+Main analytical goals:
+
+1. Prepare and clean participatory surveillance records
+2. Classify symptom patterns into likely diseases
+3. Aggregate disease counts over time
+4. Detect statistically relevant spikes using threshold-based monitoring
+
+---
+
+## 2) Technical Highlights
+
+- **Individualized diagnosis ranking:** Symptoms are mapped to a disease-symptom knowledge base and ranked with similarity logic.
+- **Local translation support:** Optional local LLM translation via Ollama for diagnosis labels.
+- **Schema contract for integration:** Diagnosis pipeline exports a JSON schema contract for downstream checks.
+- **Outbreak-oriented monitoring:** Weekly observed counts are compared against a rolling CI95 upper threshold.
+- **Single environment strategy:** One project virtual environment (`.venv`) and one Jupyter kernel for all notebooks.
+
+---
+
+## 3) Repository Structure
+
+```text
 projeto_proepi_gds_datascience/
-├── data/                           # Dados do projeto
-│   ├── raw/                        # Dados brutos (CSV, Excel)
-│   ├── inputs/                     # Dados de entrada (ex.: Disease and symptoms dataset)
-│   ├── processed/                  # Dados processados e limpos
-│   ├── results/                    # Resultados das análises
-│   │   ├── clusters_outputs/       # Saídas da clusterização (notebook 02)
-│   │   └── agent_outputs/          # Saídas do agente de diagnóstico (notebook 03)
-│   └── external/                   # Dados externos de referência
-├── notebooks/                      # Jupyter Notebooks de análise
-│   ├── 01_exploratory_data_analysis.ipynb   # Análise Exploratória de Dados
-│   ├── 02_clustering_syndromes.ipynb       # Clusterização para Síndromes
-│   ├── 03_agent_diagnosis_surveillance.ipynb  # Diagnóstico por Agente (Jaccard + Medley)
-│   ├── 04_time_series_analysis.ipynb       # Análise de Séries Temporais
-│   ├── tabelas/                    # Tabelas de resultados
-│   └── graficos/                   # Gráficos e visualizações
-├── models/                         # Modelos treinados e scripts
-│   ├── trained/                    # Modelos salvos (.pkl, .joblib)
-│   │   ├── clustering_models/
-│   │   ├── time_series_models/
-│   │   └── anomaly_detection_models/
-│   └── scripts/                    # Scripts para treinar modelos
+├── data/
+│   ├── external/                 # Optional external data
+│   ├── inputs/                   # Reference inputs (e.g., disease/symptom base)
+│   ├── processed/                # Intermediate processed tables
+│   ├── raw/                      # Raw source files
+│   └── results/                  # Notebook-centric outputs
+├── docs/
+├── logs/
+├── models/
+│   └── scripts/
 │       ├── train_clustering.py
 │       └── train_time_series.py
-├── scripts/                        # Scripts auxiliares do projeto
-│   ├── setup_environment.py       # Configuração do ambiente (GPU, logging, paths)
-│   └── create_presentation.py     # Geração de apresentação a partir dos notebooks
-├── src/                            # Código fonte Python
-│   ├── data/                       # Carregamento e processamento de dados (DataLoader)
-│   └── utils/                      # Utilitários (config, environment, logging, helpers)
-├── requirements.txt                # Dependências Python
-├── setup.py                        # Configuração do pacote
-├── env.example                     # Exemplo de variáveis de ambiente
-└── README.md                       # Este arquivo
+├── notebooks/
+│   ├── 01_exploratory_data_analysis.ipynb
+│   ├── 02_clustering_syndromes.ipynb
+│   ├── 03_agent_diagnosis_surveillance.ipynb
+│   └── 04_time_series_analysis.ipynb
+├── scripts/
+│   ├── setup_environment.py
+│   └── suggested_validate_agent_schema.py
+├── src/
+│   ├── data/
+│   │   └── preprocessing.py
+│   ├── models/
+│   │   ├── agent_diagnosis/
+│   │   │   ├── app.py
+│   │   │   ├── config.py
+│   │   │   └── tools/
+│   │   └── time_series/
+│   │       └── main.py
+│   ├── outputs/
+│   │   ├── genai/
+│   │   ├── charts/
+│   │   ├── sheets/
+│   │   └── time_series/
+│   └── utils/
+│       ├── config.py
+│       ├── environment.py
+│       ├── helpers.py
+│       ├── logging_config.py
+│       ├── pathing.py
+│       └── statistics.py
+├── requirements.txt
+├── setup.py
+└── README.md
 ```
 
 ---
 
-## 🔬 Metodologia Científica
+## 4) Data Inputs and Outputs
 
-### Fase 1: Análise Exploratória de Dados (EDA)
-- **Objetivo**: Compreender características dos dados e qualidade
-- **Processos**:
-  - Limpeza e tratamento de valores ausentes
-  - Análise descritiva de variáveis
-  - Análise temporal e espacial
-  - Identificação de padrões e outliers
+### Primary inputs
 
-### Fase 2: Clusterização para Definição de Síndromes
-- **Objetivo**: Agrupar sintomas similares em síndromes
-- **Algoritmo**: K-Prototype (dados mistos numéricos/categóricos)
-- **Validação**: Silhouette Score e análise de estabilidade
-- **Output**: Definição de síndromes para análise temporal (ex.: `clusters_outputs_dataset_sintomas_grupos.xlsx`)
+- Participatory surveillance records (report-level)
+- Clustered/processed symptom datasets from prior notebook steps
+- Disease-symptom reference dataset (used by diagnosis ranking)
 
-### Fase 3: Diagnóstico por Agente (Agent Diagnosis)
-- **Objetivo**: Classificar combinações únicas de sintomas em relação a um dataset de referência de doenças
-- **Referência**: Medley Disease and symptoms dataset 2023 (773 doenças, 377 sintomas)
-- **Método**: Similaridade de Jaccard entre sintomas (PT-BR) e dataset em inglês; mapeamento de nomes de sintomas
-- **Ferramentas**: Diagnóstico primário (melhor match; se ≥60%); diagnósticos secundários (matches 50–59% quando primário ≥60%)
-- **Output**: Planilhas classificadas em `data/results/agent_outputs/`
+### Main outputs
 
-### Fase 4: Modelagem de Séries Temporais
-- **Objetivo**: Prever incidência esperada de cada síndrome
-- **Modelos**: SARIMA, XGBoost, LSTM, Prophet
-- **Métricas**: RMSE, R², Ljung-Box test
-- **Validação**: Time series cross-validation
+- **Notebook outputs:** `data/results/...`
+- **Production diagnosis outputs:** `src/outputs/genai/...`
+- **Production time series outputs:** `src/outputs/time_series/charts/` and `src/outputs/time_series/sheets/`
 
-### Fase 5: Detecção de Anomalias
-- **Objetivo**: Identificar desvios significativos da normalidade
-- **Critério**: Casos observados > limite superior do IC 95%
-- **Output**: Sistema de alerta para surtos potenciais
+### Diagnosis output artifacts
+
+Generated by `src/models/agent_diagnosis/app.py`:
+
+- `src/outputs/genai/agent_outputs_dataset_sintomas_grupos_classificado.parquet`
+- `src/outputs/genai/agent_outputs_dataset_sintomas_agrupados_unicos_classificado.parquet`
+- `src/outputs/genai/agent_diagnosis_output_schema.json`
 
 ---
 
-## 🛠️ Stack Tecnológico
+## 5) Environment Setup
 
-### Linguagens e Ambientes
-- **Python 3.8+**: Linguagem principal
-- **Jupyter Notebooks**: Análise interativa
-- **Git**: Controle de versão
+### Requirements
 
-### Bibliotecas Principais
-- **Análise de Dados**: `pandas`, `numpy`, `openpyxl`
-- **Machine Learning e Séries Temporais**: `scikit-learn`, `xgboost`, `statsmodels`, `flaml` (AutoML e previsão temporal)
-- **Visualização**: `matplotlib`
-- **Agentes e embeddings** (opcional): `langchain`, `langchain-community`, `langchain-huggingface`, `langchain-chroma`, `chromadb`, `sentence-transformers`, `ollama`, `pypdf`
+- Python `3.10+` (actively used in this project with Python `3.13`)
+- `pip` (or `uv`, optional but supported by setup script)
+- Optional: Ollama for local LLM-based translation
 
----
+### Manual setup (recommended baseline)
 
-## 🚀 Instalação e Configuração
-
-### Pré-requisitos
-- Python 3.8 ou superior
-- Git
-- 8GB+ RAM recomendado
-
-### Instalação
 ```bash
-# 1. Clone o repositório
-git clone https://github.com/daniellybx/projeto_proepi_gds_datascience.git
-cd projeto_proepi_gds_datascience
-
-# 2. Crie ambiente virtual
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-
-# 3. Instale dependências
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
-
-# 4. Instale em modo desenvolvimento
 pip install -e .
 ```
 
-### Configuração
+### Optional dependency for Parquet
+
+If your environment does not already include Parquet support:
+
 ```bash
-# Configure variáveis de ambiente (opcional)
-cp env.example .env
-# Edite .env com suas configurações
+pip install pyarrow
+```
+
+### Automated setup script
+
+Use `scripts/setup_environment.py` to provision everything in one flow:
+
+```bash
+python scripts/setup_environment.py --recreate-venv
+```
+
+Useful flags:
+
+- `--venv-path .venv` (default)
+- `--requirements-file requirements.txt` (default)
+- `--recreate-venv` (delete and rebuild environment)
+- `--skip-kernel` (do not register Jupyter kernel)
+- `--kernel-name proepi-unico`
+- `--kernel-display-name "Python (.venv proepi)"`
+- `--no-uv` (force `venv + pip` instead of `uv`)
+
+---
+
+## 6) Jupyter Kernel Setup (Single Kernel)
+
+To keep notebook execution consistent, use one kernel for the whole repository.
+
+Register kernel manually (if needed):
+
+```bash
+source .venv/bin/activate
+python -m pip install ipykernel jupyter
+python -m ipykernel install --user --name proepi-unico --display-name "Python (.venv proepi)"
+```
+
+In Cursor/VS Code notebooks, select:
+
+- `Python (.venv proepi)`
+
+---
+
+## 7) Running Notebooks
+
+Recommended order:
+
+1. `notebooks/01_exploratory_data_analysis.ipynb`
+2. `notebooks/02_clustering_syndromes.ipynb`
+3. `notebooks/03_agent_diagnosis_surveillance.ipynb`
+4. `notebooks/04_time_series_analysis.ipynb`
+
+Notebook outputs usually go to:
+
+- `data/results/agent_outputs/`
+- `data/results/clusters_outputs/`
+- `data/results/time_series_outputs/`
+
+Note: notebooks are research-oriented and may include exploratory branches not mirrored in `src/`.
+
+---
+
+## 8) Running Production Pipelines (`src/`)
+
+### A) Agent Diagnosis Pipeline
+
+Run:
+
+```bash
+python src/models/agent_diagnosis/app.py
+```
+
+What it does:
+
+1. Loads preprocessed symptom clusters
+2. Creates unique symptom-set combinations
+3. Ranks candidate diseases
+4. Applies translation layer (when configured)
+5. Writes full + unique Parquet datasets
+6. Writes schema contract JSON
+
+Optional schema validation:
+
+```bash
+python scripts/suggested_validate_agent_schema.py
+```
+
+### B) Time Series Monitoring Pipeline
+
+Run:
+
+```bash
+python src/models/time_series/main.py
+```
+
+What it does:
+
+1. Loads diagnosis Parquet output
+2. Aggregates daily counts by disease
+3. Builds weekly disease frames
+4. Computes:
+   - observed weekly counts
+   - 7-day moving average estimate
+   - rolling CI95 upper threshold
+5. Flags outbreaks where:
+   - `observed_weekly > ci95_upper_30d`
+6. Exports:
+   - per-disease charts (`.png`)
+   - per-disease summary sheets (`.xlsx`)
+
+Default target selection in this module currently prioritizes dengue/influenza label matching.
+
+---
+
+## 9) Reproducibility and Validation
+
+- Keep all runs under the same `.venv` interpreter.
+- Regenerate diagnosis outputs before running time series, when upstream data changed.
+- Use `suggested_validate_agent_schema.py` after diagnosis exports.
+- Track generated outputs separately from source code in commits.
+- Prefer absolute-root-safe path handling via `pathlib.Path` in custom scripts.
+
+Minimal validation sequence:
+
+```bash
+python src/models/agent_diagnosis/app.py
+python scripts/suggested_validate_agent_schema.py
+python src/models/time_series/main.py
 ```
 
 ---
 
-## 📊 Execução da Análise
+## 10) Troubleshooting
 
-### 1. Configuração do ambiente (opcional)
-```bash
-python scripts/setup_environment.py
-```
+### Invalid interpreter in Cursor/VS Code
 
-### 2. Notebooks (ordem recomendada)
-```bash
-# 1. Análise Exploratória de Dados
-jupyter notebook notebooks/01_exploratory_data_analysis.ipynb
+- Ensure workspace interpreter points to `.venv/bin/python` (macOS/Linux) or `.venv\\Scripts\\python.exe` (Windows).
+- Re-select kernel/interpreter after recreating `.venv`.
 
-# 2. Clusterização para Síndromes
-jupyter notebook notebooks/02_clustering_syndromes.ipynb
+### `OSError` when saving Excel files
 
-# 3. Diagnóstico por Agente (Jaccard + Medley)
-jupyter notebook notebooks/03_agent_diagnosis_surveillance.ipynb
+Common causes:
 
-# 4. Análise de Séries Temporais
-jupyter notebook notebooks/04_time_series_analysis.ipynb
-```
+- Invalid path string (for example placeholder text like `"...`)
+- Missing directory
+- Missing separator between folder and filename
 
-### 3. Treinamento de modelos (scripts)
-```bash
-# Clusterização
-python models/scripts/train_clustering.py
+Use `Path(...).mkdir(parents=True, exist_ok=True)` and build file paths with `/` operator from `pathlib`.
 
-# Séries Temporais
-python models/scripts/train_time_series.py
-```
+### `BadZipFile` when reading `.xlsx`
 
-### 4. Geração de apresentação (opcional)
-```bash
-# Gera PowerPoint a partir dos notebooks de clustering e séries temporais
-python scripts/create_presentation.py
-```
+- File may be corrupted, partially downloaded, or not a valid Excel file.
+- Verify source file integrity and extension before reading.
+
+### Parquet write/read errors
+
+- Install Parquet engine:
+  - `pip install pyarrow`
+
+### No outbreak charts generated
+
+- Confirm diagnosis Parquet exists in `src/outputs/genai/`.
+- Confirm target disease labels are found in data (dengue/influenza matching logic).
 
 ---
 
-## 📈 Resultados Esperados
+## 11) Technical Report (Method + Results)
 
-### Produtos da Análise
-1. **Modelos Treinados**: Arquivos `.pkl` salvos em `models/trained/`
-2. **Gráficos**: Visualizações salvas em `notebooks/graficos/`
-3. **Tabelas**: Resultados numéricos em `notebooks/tabelas/`
-4. **Notebooks**: Análises completas em `notebooks/`
+### Methodology
 
-### Métricas de Avaliação
-- **Clusterização**: Silhouette Score, Davies-Bouldin Index
-- **Séries Temporais**: RMSE, MAE, R², Ljung-Box p-value
-- **Detecção**: Precision, Recall, F1-Score para anomalias
+1. **Data treatment and preprocessing**
+   - Processed 1,110,874 platform reports (2022-2024)
+   - Performed typing, geographic filtering, and integrity checks
+   - Consolidated repeated user reports into symptomatic events
 
----
+2. **Classification strategy evolution**
+   - Tested unsupervised approaches (DBSCAN, K-Modes, LCA, graph clustering)
+   - Rejected clinically incoherent grouping behavior in this context
 
-## 🧪 Testes
+3. **Individualized AI-based classification**
+   - Used local LLaMA-family model execution (Ollama)
+   - Referenced disease-symptom knowledge base
+   - Applied Jaccard-style overlap logic for ranking
+   - Used practical primary/secondary thresholding bands
 
-```bash
-# Executar testes (quando disponíveis)
-pytest
-```
+4. **Modeling and outbreak detection**
+   - Applied feasibility filters for temporal density and history length
+   - Evaluated AutoML forecasting in notebook workflow
+   - Adopted threshold-based monitoring (MA + CI95 upper) for robust signal detection under sparse/discontinuous regimes
 
----
+### Results (high-level)
 
-## 📝 Contribuição para Pesquisa
-
-### Para Colaboradores
-1. Crie branch seguindo padrão: `local-{máquina}-{nome}`
-   - Exemplos: `local-macbook-danielly`, `local-pc-danielly`
-2. Faça suas modificações
-3. Commit com mensagem descritiva
-4. Abra Pull Request
-
-### Padrões de Código
-- Siga PEP 8 para Python
-- Use type hints
-- Documente funções com docstrings
-- Escreva testes para novas funcionalidades
+- Classified dozens of diseases from unstructured symptom reports
+- Identified a small subset of diseases viable for longitudinal analysis
+- Observed weak forecasting reliability under high discontinuity
+- Obtained stronger practical value from outbreak threshold detection, including dengue and influenza spikes
 
 ---
 
-## 📚 Referências e Citações
+## 12) Contributing
 
-### Dados
-- **Fonte**: Aplicativo Guardiões da Saúde (ProEpi)
-- **Período**: 2022-2024
-- **População**: Comunidade UnB
-
-### Metodologia
-- K-Prototype clustering para dados mistos
-- Diagnóstico por agente: similaridade de Jaccard com Medley Disease and symptoms dataset 2023
-- Múltiplos modelos de séries temporais
-- Detecção de anomalias baseada em intervalos de confiança
+1. Create a focused branch.
+2. Keep commits small and descriptive.
+3. Include what you executed to validate changes.
+4. Avoid mixing notebook-only artifacts with production code refactors in the same commit when possible.
 
 ---
 
-## 👥 Autores e Contato
+## 13) License and Contact
 
-**Pesquisadora Principal:**
+Licensed under MIT. See `LICENSE`.
+
+Project contact:
+
 - **Danielly Xavier**
-- Email: danielly.xavier@outlook.com
-- Afiliação: ProEpi - Guardiões da Saúde
+- `danielly.xavier@outlook.com`
 
-**Instituição:**
-- **ProEpi - Guardiões da Saúde**
-- Website: https://proepi.org.br
-
----
-
-## 📄 Licença
-
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
----
