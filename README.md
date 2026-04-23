@@ -24,8 +24,10 @@ This repository combines exploratory notebooks and production-style Python modul
 - [9) Reproducibility and Validation](#9-reproducibility-and-validation)
 - [10) Troubleshooting](#10-troubleshooting)
 - [11) Technical Report (Method + Results)](#11-technical-report-method--results)
-- [12) Contributing](#12-contributing)
-- [13) License and Contact](#13-license-and-contact)
+- [12) Configuration (`.env`)](#12-configuration-env)
+- [13) Tests](#13-tests)
+- [14) Contributing](#14-contributing)
+- [15) License and Contact](#15-license-and-contact)
 
 ---
 
@@ -100,6 +102,7 @@ projeto_proepi_gds_datascience/
 │       └── statistics.py
 ├── requirements.txt
 ├── setup.py
+├── env.example
 └── README.md
 ```
 
@@ -349,7 +352,38 @@ Use `Path(...).mkdir(parents=True, exist_ok=True)` and build file paths with `/`
 
 ---
 
-## 12) Contributing
+## 12) Configuration (`.env`)
+
+This project can run with defaults, but you can override environment variables via `.env`.
+
+1. Copy the template:
+
+```bash
+cp env.example .env
+```
+
+2. Edit `.env` with your local values (for example paths, model/provider options, runtime flags).
+3. Keep sensitive values out of commits (`.env` should remain local).
+
+---
+
+## 13) Tests
+
+Run the test suite from the repository root:
+
+```bash
+pytest
+```
+
+If `pytest` is not available in your environment:
+
+```bash
+pip install pytest
+```
+
+---
+
+## 14) Contributing
 
 1. Create a focused branch.
 2. Keep commits small and descriptive.
@@ -358,7 +392,7 @@ Use `Path(...).mkdir(parents=True, exist_ok=True)` and build file paths with `/`
 
 ---
 
-## 13) License and Contact
+## 15) License and Contact
 
 Licensed under MIT. See `LICENSE`.
 
